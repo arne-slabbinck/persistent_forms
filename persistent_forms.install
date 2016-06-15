@@ -1,0 +1,62 @@
+<?php
+
+/**
+ * Implements hook_schema().
+ */
+function persistent_forms_schema() {
+  $schema['persistent_forms_submission'] = array(
+    'description' => 'Stores Persistent Forms submissions.',
+    'fields' => array(
+      'id' => array(
+        'description' => 'Unique identifier.',
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'form_id' => array(
+        'description' => 'Drupal $form_id.',
+        'type' => 'varchar',
+        'length' => '45',
+        'not null' => TRUE,
+      ),
+      'created' => array(
+        'description' => 'Date of creation (UNIX timestamp).',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+    ),
+    'primary key' => array('id'),
+  );
+
+  $schema['persistent_forms_submission_data'] = array(
+    'description' => 'Stores Persistent Forms submission data.',
+    'fields' => array(
+      'submission' => array(
+        'description' => 'Submission ID.',
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+      ),
+      'field' => array(
+        'description' => 'Data field name.',
+        'type' => 'varchar',
+        'length' => '45',
+        'not null' => TRUE,
+      ),
+      'value' => array(
+        'description' => 'Data value.',
+        'type' => 'text',
+        'size' => 'big',
+        'not null' => TRUE,
+      ),
+    ),
+    /*'foreign keys' => array(
+      'persistent_forms_submission' => array(
+        'table' => 'persistent_forms_submission',
+        'columns' => array('submission' => 'id'),
+      ),
+    ),*/
+  );
+  return $schema;
+}

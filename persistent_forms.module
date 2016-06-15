@@ -1,0 +1,82 @@
+<?php
+
+/**
+ * Implements hook_form_alter().
+ */
+function persistent_forms_form_alter(&$form, &$form_state, $form_id) {
+	$persistent_forms = _persistent_forms_get_persistent_forms();
+
+  if (array_key_exists($form_id, $persistent_forms)) {
+    $form['#submit'][] = 'persistent_forms_form_submit_handler';
+  }
+}
+
+/**
+ * Persistent Forms submit handler.
+ */
+function persistent_forms_form_submit_handler(&$form, &$form_state) {
+  $persistent_forms = _persistent_forms_get_persistent_forms();
+
+  $form_id = (string)$form['#form_id'];
+
+  if (!empty($persistent_forms[$form_id])) {
+    foreach ($persistent_forms[$form_id] as $field) {
+      if (isset($form_state['values'][$field])) {
+        $data = new stdClass();
+        $data->field = $field;
+        $data->value = $form_state['values'][$field];
+        $values[] = $data;
+      }
+    }
+    _persistent_forms_persist_submission($form_id, $values);
+  }
+
+}
+
+/**
+ * Implements hook_persistent_forms().
+ */
+function persistent_forms_persistent_forms() {
+  return [
+    'user_login_block' => ['name', 'pass'],
+    'node_edit_form' => [],
+  ];
+}
+
+/**
+ * Returns all persistent forms.
+ * @return array
+ */
+function _persistent_forms_get_persistent_forms() {
+  $persistent_forms = module_invoke_all('persistent_forms');
+  return $persistent_forms;
+}
+
+function _persistent_forms_persist_submission($form_id, $values) {
+  $transaction = db_transaction();
+  try {
+    $submission = new stdClass();
+    $submission->form_id = $form_id;
+    $submission->created = time();
+    drupal_write_record('persistent_forms_submission', $submission);
+
+    foreach ($values as $data) {
+      $data->submission = $submission->id;
+      drupal_write_record('persistent_forms_submission_data', $data);
+    }
+  }
+  catch (Exception $e) {
+    $transaction->rollback();
+    watchdog('persistent_forms', 'An error occurred: @e', array('@e' => $e), WATCHDOG_ERROR);
+  }
+}
+
+/**
+ * Implements hook_views_api().
+ */
+function persistent_forms_views_api() {
+  return array(
+    'api' => 3.0,
+    'path' => drupal_get_path('module', 'persistent_forms') . '/views',
+  );
+}

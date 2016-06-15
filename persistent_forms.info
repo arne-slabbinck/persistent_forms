@@ -1,0 +1,6 @@
+name = Persistent Forms
+description = "Persists form submissions in the database."
+version = 7.x
+core = 7.x
+
+files[] = views/persistent_forms_handler_field_submission_data.inc
