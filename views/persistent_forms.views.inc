@@ -69,7 +69,7 @@ function persistent_forms_views_data() {
   $data['persistent_forms_submission']['value'] = array(
     'title' => 'Value',
     'help' => t('The value of a field as submitted by the user.'),
-    'real field' => 'submission',
+    'real field' => 'id',
     //'group' => t('Persistent Forms'),
     'field' => array(
       'handler' => 'persistent_forms_handler_field_submission_data',
