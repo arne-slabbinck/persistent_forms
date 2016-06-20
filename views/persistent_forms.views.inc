@@ -70,7 +70,6 @@ function persistent_forms_views_data() {
     'title' => 'Value',
     'help' => t('The value of a field as submitted by the user.'),
     'real field' => 'id',
-    //'group' => t('Persistent Forms'),
     'field' => array(
       'handler' => 'persistent_forms_handler_field_submission_data',
       'click sortable' => TRUE,
@@ -78,19 +77,16 @@ function persistent_forms_views_data() {
   );
 
   // Persistent Forms submission data.
-  /*$data['persistent_forms_submission']['data'] = array(
+  $data['persistent_forms_submission_data']['table'] = array(
     'title' => t('Data'),
     'help' => t('Relates to Persistent Forms submission data.'),
-    'real field' => 'submission',
-    'relationship' => array(
-      //'handler' => 'persistent_forms_handler_relationship_submission_data',
-      'base' => 'persistent_forms_submission_data',
-      'base field' => 'submission',
-      'label' => t('Submission data'),
+  );
+  $data['persistent_forms_submission_data']['table']['join'] = array(
+    'persistent_forms_submission' => array(
+      'left_field' => 'id',
+      'field' => 'submission',
     ),
-  );*/
-
-  //$data['persistent_forms_submission_data']['table']['group'] = t('Persistent Forms');
+  );
 
 	return $data;
 }

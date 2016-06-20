@@ -10,7 +10,7 @@
  *
  * @ingroup views_field_handlers
  */
-class persistent_forms_handler_field_submission_data extends views_handler_field {
+class persistent_forms_handler_field_submission_data extends views_handler_field_custom {
 
   function option_definition() {
     $options = parent::option_definition();
@@ -35,8 +35,15 @@ class persistent_forms_handler_field_submission_data extends views_handler_field
     _persistent_forms_views_field_handler_form_validate($form, $form_state);
   }
 
-  /*function options_submit(&$form, &$form_state) {
-    parent::options_submit($form, $form_state);
-  }*/
+  public function pre_query() {
+    parent::pre_query();
+    $alias = $this->query->add_table('persistent_forms_submission_data');
+    $this->field_alias = $this->query->add_field($alias, 'value');
+    $this->query->add_where(0, "{$alias}.field", $this->options['persistent_forms_field']);
+  }
+
+  function render($row) {
+    return $row->{$this->field_alias};
+  }
 
 }
